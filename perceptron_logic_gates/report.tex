@@ -1,0 +1,273 @@
+\documentclass{report}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{listings}
+
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }\graphicspath{ {./images/} }
+\begin{document}
+\begin{sloppypar}
+
+    \title{ASSIGNMENT}
+    \author{Jithu Subramanian}
+    \vspace{5cm}
+
+    \date{\parbox{\linewidth}{\centering%
+  \today\endgraf\bigskip
+  \vspace{10cm}
+  Deep Learning for Computer Vision: \hspace*{3cm} \vspace{5cm}Implementation of Perceptron \endgraf\medskip
+  M-Tech Software Engineering \endgraf
+  Dept.\ of Computer Science}}
+    \maketitle
+
+
+\chapter*{Perceptron}
+Perceptron is Machine Learning algorithm for supervised learning of various binary classification tasks. Further, Perceptron is also understood as an Artificial Neuron or neural network unit that helps to detect certain input data computations in business intelligence.
+Perceptron model is also treated as one of the best and simplest types of Artificial Neural networks. However, it is a supervised learning algorithm of binary classifiers. Hence, we can consider it as a single-layer neural network with four main parameters, i.e., input values, weights and Bias, net sum, and an activation function.
+
+\subsubsection{Input Nodes or Input Layer:}
+ 
+This is the primary component of Perceptron which accepts the initial data into the system for further processing. Each input node contains a real numerical value.
+
+\subsubsection {Wight and Bias:}
+Weight parameter represents the strength of the connection between units. This is another most important parameter of Perceptron components. Weight is directly proportional to the strength of the associated input neuron in deciding the output. Further, Bias can be considered as the line of intercept in a linear equation.
+
+\subsubsection {Activation Function:}
+These are the final and important components that help to determine whether the neuron will fire or not. Activation Function can be considered primarily as a step function.
+
+
+\includegraphics{per.png}
+\begin{center}
+    \large{Fig: 1 Perceptron}
+\end{center}
+
+\section* {Perceptron Algorithm:}
+\includegraphics[width=18cm, height=10cm]{algo.png}
+\newline
+\newline
+\section*{Implementation of Perceptron from scratch:}
+\vspace{1cm}
+\large{
+The aim is to realize AND, OR, NAND, NOR, and XOR gates using the perceptron program and visualize the results in desmos}
+
+
+\subsection* {Program:}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+struct Perceptron
+{
+    float w1, w2, th;
+};
+
+Perceptron train(int[], int[], int[], Perceptron);
+Perceptron initialize(Perceptron);
+float getRandom();
+int activation(float);
+void output(Perceptron);
+
+int main()
+{
+    int x1[4] = {0, 0, 1, 1};
+    int x2[4] = {0, 1, 0, 1};
+
+    int yand[4] = {0, 0, 0, 1};
+    int yor[4] = {0, 1, 1, 1};
+    int yxor[4] = {0, 1, 1, 0};
+    int ynand[4] = {1, 1, 1, 0};
+    int ynor[4] = {1, 0, 0, 0};
+    int n;
+
+    struct Perceptron p;
+
+    printf("Enter the type of logic gate output: \n1.AND\n2.OR\n3.NAND\n4.NOR\n5.XOR\n");
+    scanf("%d", &n);
+
+    Perceptron pr = initialize(p);
+    switch (n)
+    {
+    case 1:
+    {
+        Perceptron pr1 = train(x1, x2, yand, pr);
+        output(pr1);
+        break;
+    }
+    case 2:
+    {
+        Perceptron pr1 = train(x1, x2, yor, pr);
+        output(pr1);
+        break;
+    }
+    case 3:
+    {
+        Perceptron pr1 = train(x1, x2, ynand, pr);
+        output(pr1);
+        break;
+    }
+    case 4:
+    {
+        Perceptron pr1 = train(x1, x2, ynor, pr);
+        output(pr1);
+        break;
+    }
+    case 5:
+    {
+        Perceptron pr1 = train(x1, x2, yxor, pr);
+        output(pr1);
+        break;
+    }
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+Perceptron initialize(Perceptron pr)
+{
+    pr.w1 = getRandom();
+    pr.w2 = getRandom();
+    printf("W1: %f W2: %f \n", pr.w1, pr.w2);
+    printf("Enter threshold value: ");
+    scanf("%f", &pr.th);
+
+    return pr;
+}
+
+Perceptron train(int x1[], int x2[], int y[], Perceptron pr)
+{
+    int count = 0, itr = 0;
+    while (count != 4)
+
+    {
+        count = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            float prd = pr.w1 * x1[i] + pr.w2 * x2[i] + pr.th;
+            int predict = activation(prd);
+
+            if (predict == y[i])
+            {
+                count++;
+            }
+
+            else if ((predict == 1) && (y[i] == 0))
+            {
+                pr.w1 = pr.w1 - x1[i];
+                pr.w2 = pr.w2 - x2[i];
+            }
+            else if ((predict == 0) && (y[i] == 1))
+            {
+                pr.w1 = pr.w1 + x1[i];
+                pr.w2 = pr.w2 + x2[i];
+            }
+        }
+        itr++;
+
+        if (itr == 1000)
+        {
+            printf("\ninvalid threshold provided or maximum iterations reached !!!\n");
+            break;
+        }
+    }
+    return pr;
+}
+
+int activation(float predict)
+{
+
+    if (predict > 0)
+        return 1;
+    else
+        return 0;
+}
+
+int random(int min, int max)
+{
+    static bool first = true;
+    if (first)
+    {
+        srand(time(NULL));
+        first = false;
+    }
+    return min + rand() % ((max + 1) - min);
+}
+
+float getRandom()
+{
+    return random(-100, 100) / 100.0;
+}
+
+void output(Perceptron pr)
+{
+    if (pr.th < 0)
+    {
+    printf("\nseparation line:  %.2f x1 + %.2f x2 %.2f  = 0\n", pr.w1, pr.w2, pr.th);
+    }
+    else
+    {
+    printf("\nseparation line:  %.2f x1 + %.2f x2 + %.2f = 0\n", pr.w1,pr.w2, pr.th);
+    }
+}
+
+
+\end{lstlisting}
+\subsection* {Result:}
+\vspace{15mm}
+\subsubsection{AND Gate:}
+\vspace{5mm}
+
+\includegraphics[scale=1.2]{and_out.png}
+\vspace{5mm}
+\subsubsection {Graphical Repesentation:}
+\vspace{5mm}
+\includegraphics[scale=0.7]{and.png}
+\paragraph{From the figure, it's clear that the line separates the points as in an AND gate. The line cut the plane in such a way that the point (1,1) is classified as positive and others as negative just like an AND gate for the inputs. So, here a perceptron with AND gate logic has been implemented successfully. }
+\vspace{5mm}
+
+\subsubsection{OR Gate:}
+\vspace{5mm}
+\includegraphics[scale=1.05]{or_out.png}
+\vspace{5mm}
+\subsubsection {Graphical Repesentation:}
+\vspace{5mm}
+\includegraphics[scale=0.7]{or.png}
+\vspace{5mm}
+\paragraph{From the figure, it's clear that the line separates the points as in an OR gate.So, here a perceptron with OR gate logic has been implemented successfully. }
+\vspace{5mm}
+
+\subsubsection{NAND Gate:}
+\vspace{15mm}
+\includegraphics[scale=1.1]{nand_out.png}
+\vspace{15mm}
+\subsubsection {Graphical Repesentation:}
+\vspace{15mm}
+\includegraphics[scale=0.75]{nand.png}
+\paragraph{From the figure, it's clear that the line separates the points as in an NAND gate. So, here a perceptron with NAND gate logic has been implemented successfully. }
+\vspace{5mm}
+
+\subsubsection{NOR Gate:}
+\vspace{5mm}
+\includegraphics[scale=1.1]{nor_out.png}
+\vspace{5mm}
+\subsubsection {Graphical Repesentation:}
+\vspace{5mm}
+\includegraphics[scale=0.75]{nor.png}
+\vspace{5mm}
+\paragraph{From the figure, it's clear that the line separates the points as in an NOR gate. So, here a perceptron with NOR gate logic has been implemented successfully. }
+
+\subsubsection{XOR Gate:}
+\vspace{5mm}
+\includegraphics[scale=1.1]{xor.png}
+\vspace{5mm}
+
+\large {Since the program does not provide a seperation line equation within the given number of iterations we can conclude that It is not possible to construct a perceptron which follows the logic of an XOR gate. }
+
+\end{sloppypar}
+\end{document}
